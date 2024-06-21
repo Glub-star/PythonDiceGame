@@ -21,6 +21,3 @@ class Player():
     def __init__(self):
         
         self.dice = Dice()
-
-while True:
-    print(random.randint(0,5))
