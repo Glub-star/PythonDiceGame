@@ -37,6 +37,7 @@ class Player():
         self.alive = True
         self.score = 0
         self.block = 0
+        self.coins = 0
     
     def TakeDamage(self, damage):
         # Apply block to damage first
@@ -124,6 +125,11 @@ class Player():
         if self.health <= 0:
             self.alive = False
 
+    def Heal(self, heal_amount):
+        self.health += heal_amount
+        if self.health > self.maxHealth:
+            self.health = self.maxHealth
+
 class Map():
     def __init__(self):
         self.location = 0
@@ -139,83 +145,108 @@ class Map():
         player.score += 1
 
         if self.location == 0:
-            EnemyRoom()
+            self.EnemyRoom()
         elif self.location == 1:
-            Pool()
+            self.Pool()
         elif self.location == 2:
-            Altar()
+            self.Altar()
             
-def EnemyRoom(EnemyGiven=0):
-    if EnemyGiven == 0:
-        enemy = Enemy()
-    else:
-        enemy = EnemyGiven
-
-    print(f"{enemy.health > 0  and player.alive}")
-
-    while enemy.health > 0 and player.alive:
-        player.Turn(enemy)
-        enemy.EnemyTurn(player)
-        
-    if enemy.health < 0:
-        input(f"You killed the {enemy.name}! ")
-
-def Pool():
-    while True:
-        os.system("cls")
-        choice = input("You see a pool ahead\nDo you dive in?\n1.) Yes\n2.) No\n")
-        try:
-            choice = int(choice)
-            if choice < 0 < 2:
-                raise ValueError
-            break
-        except ValueError:
-            print("Select a valid option")
-    if choice == 1:
-        reward = random.randint(1,2)
-        if reward == 2:
-            print("You found an upgrade!\n")
-            input()
-            player.UpgradeDice(random.randint(1,2))
-            
+    def EnemyRoom(EnemyGiven=0):
+        if EnemyGiven == 0:
+            enemy = Enemy()
         else:
-            print("It was a trap!\nYou took 10 damage!")
-            player.TakeDamage(10)
+            enemy = EnemyGiven
+
+        enemy_coins= enemy.maxHealth
+
+        print(f"{enemy.health > 0  and player.alive}")
+
+        while enemy.health > 0 and player.alive:
+            player.Turn(enemy)
+            enemy.EnemyTurn(player)
+            
+        if enemy.health < 0:
+            input(f"You killed the {enemy.name}! ")
+            player.coins += enemy_coins
+
+    def Pool():
+        while True:
+            os.system("cls")
+            choice = input("You see a pool ahead\nDo you dive in?\n1.) Yes\n2.) No\n")
+            try:
+                choice = int(choice)
+                if choice < 0 < 2:
+                    raise ValueError
+                break
+            except ValueError:
+                print("Select a valid option")
+        if choice == 1:
+            reward = random.randint(1,2)
+            if reward == 2:
+                print("You found an upgrade!\n")
+                input()
+                player.UpgradeDice(random.randint(1,2))
+                
+            else:
+                print("It was a trap!\nYou took 10 damage!")
+                player.TakeDamage(10)
+                input()
+
+        elif choice == 1:
+            print("You leave the pool alone...")
             input()
 
-    elif choice == 1:
-        print("You leave the pool alone...")
+    def Altar():
+        choice = ""
+        while True:
+            os.system("cls")
+            choice = input("You see an omnious altar ahead...\nDo you place your hand upon it?\n1.)Yes \n2.)No\n ")
+            try:
+                choice = int(choice)
+                if choice == 1 or choice == 2:
+                    break
+                else:
+                    break
+                
+            except ValueError:
+                print("please enter a valid number")
+        if choice == 1:
+            result = random.randint(0,2)
+            if result == 0:
+                print("You found a new dice! ")
+                player.Dice.append(Dice())
+            if result == 1:
+                print("You found multiple upgrades! ")
+                player.UpgradeDice(5)
+            if result == 2:
+                input("You hear something rumbling from below... ")
+                EnemyRoom(EnemyGiven=Enemy(maxhealth=100, name="curiosity", damage = 10))
+
+        else:
+            print("You left the altar alone...\nMaybe the better choice\n")
         input()
 
-def Altar():
-    choice = ""
-    while True:
-        os.system("cls")
-        choice = input("You see an omnious altar ahead...\nDo you place your hand upon it?\n1.)Yes \n2.)No\n ")
-        try:
-            choice = int(choice)
-            if choice == 1 or choice == 2:
-                break
-            else:
-                break
-            
-        except ValueError:
-            print("please enter a valid number")
-    if choice == 1:
-        result = random.randint(0,2)
-        if result == 0:
-            print("You found a new dice! ")
-            player.Dice.append(Dice())
-        if result == 1:
-            print("You found multiple upgrades! ")
-            player.UpgradeDice(5)
-        if result == 2:
-            input("You hear something rumbling from below... ")
-            EnemyRoom(EnemyGiven=Enemy(maxhealth=100, name="curiosity", damage = 10))
+    def Shop(player):
+        x = ""
 
-    else:
-        print("You left the altar alone...\nMaybe the better choice\n")
-    input()
+        while x != "x":
+            os.system("cls")
+            x = input(f"You fouond a shop... \nYou have {player.coins} coins\n1.) Health potion (+20 HP) (25 coins)\n2.) Max Heal (75 coins)\n3.)Dice Upgrade (100 coins)\n4.) New Dice (200 coins) ")
+            if x == "1" and player.coins > 25:
+                player.coins -= 25
+            elif x == "2" and player.coins > 75:
+                player.coins -= 75
+                player.health = player.maxHealth
+            elif x == "3" and player.coins > 100:
+                player.coins -= 100
+                player.UpgradeDice(1)
+            elif x == "4" and player.coins > 200:
+                player.coins -= 200
+                player.Dice.append(Dice())
+                
+
+
+
 
 ###################################################
 map = Map()
