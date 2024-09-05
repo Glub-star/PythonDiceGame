@@ -37,7 +37,7 @@ class Player():
         self.alive = True
         self.score = 0
         self.block = 0
-        self.coins = 0
+        self.coins = 500
     
     def TakeDamage(self, damage):
         # Apply block to damage first
@@ -133,6 +133,7 @@ class Player():
 class Map():
     def __init__(self):
         self.location = 0
+        self.previous_location = 5
         '''
         0 will be enemy
         1 will be pool
@@ -141,7 +142,9 @@ class Map():
         4 will be boss
         '''
     def NewRoom(self):
-        self.location = random.randint(0,3)
+        self.previous_location = self.location
+        while self.previous_location == self.location:
+            self.location = random.randint(0,3)
         player.score += 1
 
         if self.location == 0:
@@ -153,7 +156,7 @@ class Map():
         elif self.location == 3:
             self.Shop()
             
-    def EnemyRoom(EnemyGiven=0):
+    def EnemyRoom(self, EnemyGiven=0):
         if EnemyGiven == 0:
             enemy = Enemy()
         else:
@@ -171,7 +174,7 @@ class Map():
             input(f"You killed the {enemy.name}! ")
             player.coins += enemy_coins
 
-    def Pool():
+    def Pool(self):
         while True:
             os.system("cls")
             choice = input("You see a pool ahead\nDo you dive in?\n1.) Yes\n2.) No\n")
@@ -198,7 +201,7 @@ class Map():
             print("You leave the pool alone...")
             input()
 
-    def Altar():
+    def Altar(self):
         choice = ""
         while True:
             os.system("cls")
@@ -228,12 +231,12 @@ class Map():
             print("You left the altar alone...\nMaybe the better choice\n")
         input()
 
-    def Shop(player):
+    def Shop(self):
         x = ""
 
         while x != "x":
             os.system("cls")
-            x = input(f"You fouond a shop... \nYou have {player.coins} coins\n1.) Health potion (+20 HP) (25 coins)\n2.) Max Heal (75 coins)\n3.)Dice Upgrade (100 coins)\n4.) New Dice (200 coins) ")
+            x = input(f"You fouond a shop... \nYou have {player.coins} coins\n1.) Health potion (+20 HP) (25 coins)\n2.) Max Heal (75 coins)\n3.) Dice Upgrade (100 coins)\n4.) New Dice (200 coins) \nx.) leave shop \n")
             if x == "1" and player.coins > 25:
                 player.coins -= 25
             elif x == "2" and player.coins > 75:
