@@ -141,7 +141,7 @@ class Map():
         4 will be boss
         '''
     def NewRoom(self):
-        self.location = random.randint(0,2)
+        self.location = random.randint(0,3)
         player.score += 1
 
         if self.location == 0:
@@ -150,6 +150,8 @@ class Map():
             self.Pool()
         elif self.location == 2:
             self.Altar()
+        elif self.location == 3:
+            self.Shop()
             
     def EnemyRoom(EnemyGiven=0):
         if EnemyGiven == 0:
@@ -220,7 +222,7 @@ class Map():
                 player.UpgradeDice(5)
             if result == 2:
                 input("You hear something rumbling from below... ")
-                EnemyRoom(EnemyGiven=Enemy(maxhealth=100, name="curiosity", damage = 10))
+                map.EnemyRoom(EnemyGiven=Enemy(maxhealth=100, name="curiosity", damage = 10))
 
         else:
             print("You left the altar alone...\nMaybe the better choice\n")
